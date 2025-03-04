@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "478572047299",
+    "project_id": "mfasimulator-2b102",
+    "storage_bucket": "mfasimulator-2b102.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:478572047299:android:55f6f812a79dcb1cab6b76",
+        "android_client_info": {
+          "package_name": "com.example.mfaassistant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDL6L69jBLYGGqjcw6drwd0BIh8r0SrPTc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
