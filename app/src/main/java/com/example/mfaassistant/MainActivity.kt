@@ -18,6 +18,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,25 +35,25 @@ class MainActivity : ComponentActivity() {
         setContent {
             MFAAssistantTheme {
                 val navController = rememberNavController()
-                var hexCode by remember { mutableStateOf("") }
+                var runCode by remember { mutableStateOf("") }
 
-                NavHost(navController, startDestination = "hexInput") {
-                    composable("hexInput") {
-                        HexInputScreen(navController, onHexSubmit = { code ->
+                NavHost(navController, startDestination = "runInput") {
+                    composable("runInput") {
+                        InputScreen(navController, onSubmit = { code ->
                             navController.navigate("loadingScreen/$code") // Correct navigation
                         })
                     }
-                    composable("loadingScreen/{hexCode}") { backStackEntry ->
-                        val hexCode = backStackEntry.arguments?.getString("hexCode") ?: ""
-                        LoadingScreen(navController, hexCode)
+                    composable("loadingScreen/{runCode}") { backStackEntry ->
+                        val runCode = backStackEntry.arguments?.getString("runCode") ?: ""
+                        LoadingScreen(navController, runCode)
                     }
-                    composable("authenticationAppScreen/{hexCode}") { backStackEntry ->
-                        val hexCode = backStackEntry.arguments?.getString("hexCode") ?: ""
-                        AuthenticationAppScreen(navController, hexCode)
+                    composable("authenticationAppScreen/{runCode}") { backStackEntry ->
+                        val runCode = backStackEntry.arguments?.getString("runCode") ?: ""
+                        AuthenticationAppScreen(navController, runCode)
                     }
-                    composable("textCodeScreen/{hexCode}") { backStackEntry ->
-                        val hexCode = backStackEntry.arguments?.getString("hexCode") ?: ""
-                        TextCodeScreen(navController, hexCode)
+                    composable("textCodeScreen/{runCode}") { backStackEntry ->
+                        val runCode = backStackEntry.arguments?.getString("runCode") ?: ""
+                        TextCodeScreen(navController, runCode)
                     }
                 }
             }
@@ -60,8 +62,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun HexInputScreen(navController: androidx.navigation.NavController, onHexSubmit: (String) -> Unit) {
-    var hexCode by remember { mutableStateOf("") }
+fun InputScreen(navController: androidx.navigation.NavController, onSubmit: (String) -> Unit) {
+    var runCode by remember { mutableStateOf("") }
     var showAlert by remember { mutableStateOf(false) }
     var isChecking by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -78,17 +80,13 @@ fun HexInputScreen(navController: androidx.navigation.NavController, onHexSubmit
         )
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
+            modifier = Modifier.fillMaxSize().padding(24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Title at the top
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.8f)) // Semi-transparent
             ) {
                 Column(
@@ -97,7 +95,7 @@ fun HexInputScreen(navController: androidx.navigation.NavController, onHexSubmit
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                    text = "The MFA Assistant",
+                    text = stringResource(id = R.string.app_name),
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold
@@ -119,27 +117,28 @@ fun HexInputScreen(navController: androidx.navigation.NavController, onHexSubmit
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "The MFA Assistant helps you complete tasks using your real phone!",
+                        text = stringResource(id = R.string.main_paragraph_1),
                         style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
                         modifier = Modifier.padding(bottom = 16.dp),
                         textAlign = TextAlign.Center
                     )
 
                     Text(
-                        text = "Just put in your 8-letter run code below to connect to your web browser!",
+                        text = stringResource(id = R.string.main_paragraph_2),
                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
                         modifier = Modifier.padding(bottom = 24.dp),
                         textAlign = TextAlign.Center
                     )
 
                     OutlinedTextField(
-                        value = hexCode,
+                        value = runCode,
                         onValueChange = {
                             if (it.length <= 8 && it.matches(Regex("[0-9A-Fa-f]*"))) {
-                                hexCode = it
+                                runCode = it
                             }
                         },
-                        label = { Text("Enter 8-digit hex code") },
+                        label = { Text(stringResource(id = R.string.run_code_input_label)) },
+                        textStyle = TextStyle(color = Color.Black),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -150,24 +149,24 @@ fun HexInputScreen(navController: androidx.navigation.NavController, onHexSubmit
                         onClick = {
                             isChecking = true
                             coroutineScope.launch {
-                                val isValid = isValidRun(hexCode)
+                                val isValid = isValidRun(runCode)
                                 isChecking = false
 
                                 if (isValid) {
-                                    onHexSubmit(hexCode)
-                                    navController.navigate("loadingScreen/$hexCode")
+                                    onSubmit(runCode)
+                                    navController.navigate("loadingScreen/$runCode")
                                 } else {
                                     showAlert = true
                                 }
                             }
                         },
-                        enabled = hexCode.length == 8 && !isChecking,
+                        enabled = runCode.length == 8 && !isChecking,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         if (isChecking) {
                             CircularProgressIndicator(modifier = Modifier.size(24.dp))
                         } else {
-                            Text("Submit")
+                            Text(stringResource(id = R.string.submit_button))
                         }
                     }
                 }
@@ -177,11 +176,11 @@ fun HexInputScreen(navController: androidx.navigation.NavController, onHexSubmit
         if (showAlert) {
             AlertDialog(
                 onDismissRequest = { showAlert = false },
-                title = { Text("Error") },
-                text = { Text("No run with a matching code found") },
+                title = { Text(stringResource(id = R.string.error_title)) },
+                text = { Text(stringResource(id = R.string.run_code_error)) },
                 confirmButton = {
                     Button(onClick = { showAlert = false }) {
-                        Text("OK")
+                        Text(stringResource(id = R.string.okay_button))
                     }
                 }
             )
@@ -189,15 +188,12 @@ fun HexInputScreen(navController: androidx.navigation.NavController, onHexSubmit
     }
 }
 
-
-
-
-suspend fun isValidRun(hexCode: String): Boolean {
+suspend fun isValidRun(runCode: String): Boolean {
     val db = FirebaseFirestore.getInstance()
 
     return try {
         val querySnapshot = db.collection("runs")
-            .whereEqualTo("code", hexCode)
+            .whereEqualTo("code", runCode)
             .whereEqualTo("status", "active")
             .whereEqualTo("phone", true)
             .limit(1)
@@ -207,13 +203,5 @@ suspend fun isValidRun(hexCode: String): Boolean {
         !querySnapshot.isEmpty
     } catch (e: Exception) {
         false
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HexInputScreenPreview() {
-    MFAAssistantTheme {
-        HexInputScreen(navController = rememberNavController(), onHexSubmit = {})
     }
 }

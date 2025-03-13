@@ -1,3 +1,28 @@
 <resources>
-    <string name="app_name">MFA Assistant</string>
+<!--    Generic   -->
+    <string name="app_name">The MFA Assistant</string>
+    <string name="error_title">Error</string>
+    <string name="exit_text">Exit</string>
+<!--    Buttons   -->
+    <string name="submit_button">Submit</string>
+    <string name="okay_button">Submit</string>
+    <string name="approve_button">Approve</string>
+<!--    Run Input Screen   -->
+    <string name="main_paragraph_1">The MFA Assistant helps you complete tasks using your real phone!</string>
+    <string name="main_paragraph_2">Just put in your 8-letter run code below to connect to your web browser!</string>
+    <string name="run_code_input_label">Enter 8-digit run code</string>
+    <string name="run_code_error">No valid run with a matching code found! Are you sure you started an assisted run?</string>
+<!--    Loading Screen   -->
+    <string name="loading_text">Waiting for next activity</string>
+<!--    Text Code Screen   -->
+    <string name="text_top_text">&lt; Man-Check-Ster</string>
+    <string name="first_text">Hey! We\'ve noticed you\'ve attempted to log into your Manchester Email!</string>
+    <string name="second_text">Your code is: %s</string>
+<!--    Auth App Screen   -->
+    <string name="auth_top_text">Authentic Authenticator</string>
+    <string name="auth_bottom_text">Codes&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Accounts</string>
+    <string name="auth_text">Log in detected! Are you trying to log in?</string>
+<!--    Bottom Bar   -->
+    <string name="bottom_bar_text">Now Playing Run: %s</string>
+
 </resources>

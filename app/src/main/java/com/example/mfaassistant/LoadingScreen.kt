@@ -5,15 +5,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.example.mfaassistant.ui.components.BottomBar
 
 @Composable
-fun LoadingScreen(navController: NavController, hexCode: String) {
+fun LoadingScreen(navController: NavController, runCode: String) {
     var textCode by remember { mutableStateOf<String?>(null) }
     var authAppStatus by remember { mutableStateOf<String?>(null) }
     var complete by remember { mutableStateOf<String?>(null) }
@@ -22,9 +22,9 @@ fun LoadingScreen(navController: NavController, hexCode: String) {
 
     val firestore = FirebaseFirestore.getInstance()
 
-    LaunchedEffect(hexCode) {
+    LaunchedEffect(runCode) {
         listenerRegistration = firestore.collection("runs")
-            .document(hexCode)
+            .document(runCode)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     return@addSnapshotListener
@@ -39,15 +39,15 @@ fun LoadingScreen(navController: NavController, hexCode: String) {
                         when {
                             authAppStatus == "started" -> {
                                 navigated = true
-                                navController.navigate("authenticationAppScreen/$hexCode")
+                                navController.navigate("authenticationAppScreen/$runCode")
                             }
                             textCode == "started" -> {
                                 navigated = true
-                                navController.navigate("textCodeScreen/$hexCode")
+                                navController.navigate("textCodeScreen/$runCode")
                             }
                             complete == "completed" -> {
                                 navigated = true
-                                navController.navigate("hexInput")
+                                navController.navigate("runInput")
                             }
                         }
                     }
@@ -58,26 +58,7 @@ fun LoadingScreen(navController: NavController, hexCode: String) {
     Scaffold(
         topBar = {
         },
-        bottomBar = {
-            BottomAppBar(
-                modifier = Modifier.height(80.dp),
-                containerColor = Color(0xFFE0E0E0)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Now Playing Run: $hexCode")
-                    Button(
-                        onClick = { navController.navigate("hexInput") },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E73E6))
-                    ) {
-                        Text("Exit", color = Color.White)
-                    }
-                }
-            }
-        }
+        bottomBar = { BottomBar(navController, runCode) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -89,10 +70,10 @@ fun LoadingScreen(navController: NavController, hexCode: String) {
         ) {
             CircularProgressIndicator()
             Spacer(modifier = Modifier.height(16.dp))
-            Text("Waiting for activity", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(id = R.string.loading_text), style = MaterialTheme.typography.bodyLarge)
         }
     }
-    DisposableEffect(hexCode) {
+    DisposableEffect(runCode) {
         onDispose {
             listenerRegistration?.remove()
         }

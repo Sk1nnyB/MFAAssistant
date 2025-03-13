@@ -9,20 +9,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.mfaassistant.ui.components.BottomBar
 import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AuthenticationAppScreen(navController: NavController, hexCode: String) {
+fun AuthenticationAppScreen(navController: NavController, runCode: String) {
     val firestore = FirebaseFirestore.getInstance()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Authentic Authenticator", fontSize = 18.sp, color = Color.White) },
+                title = { Text(stringResource(id = R.string.auth_top_text), fontSize = 18.sp, color = Color.White) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1E73E6))
             )
         },
@@ -39,25 +41,10 @@ fun AuthenticationAppScreen(navController: NavController, hexCode: String) {
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text("Codes                     Accounts", color = Color.White)
+                        Text(stringResource(id = R.string.auth_bottom_text), color = Color.White)
                     }
                 }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFFE0E0E0))
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Now Playing Run: $hexCode")
-                    Button(
-                        onClick = { navController.navigate("hexInput") },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E73E6))
-                    ) {
-                        Text("Exit", color = Color.White)
-                    }
-                }
+                BottomBar(navController, runCode)
             }
         }
     ) { innerPadding ->
@@ -69,21 +56,21 @@ fun AuthenticationAppScreen(navController: NavController, hexCode: String) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ChatBubble("Log in detected! Are you trying to log in?")
+            ChatBubble(stringResource(id = R.string.auth_text))
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = {
-                    firestore.collection("runs").document(hexCode)
+                    firestore.collection("runs").document(runCode)
                         .update("authentication_app", "finished")
                         .addOnSuccessListener {
-                            navController.navigate("loadingScreen/$hexCode")
+                            navController.navigate("loadingScreen/$runCode")
                         }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E73E6)),
                 modifier = Modifier.padding(vertical = 8.dp)
             ) {
-                Text("Approve", color = Color.White, fontSize = 18.sp)
+                Text(stringResource(id = R.string.approve_button), color = Color.White, fontSize = 18.sp)
             }
         }
     }
